@@ -3,29 +3,29 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://mpriour.github.io/blog/posts/first/</loc>
+    <loc>./posts/first/</loc>
     <lastmod>2017-09-02T13:35:53-05:00</lastmod>
   </url>
   
   <url>
-    <loc>https://mpriour.github.io/blog/categories/</loc>
+    <loc>./categories/</loc>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://mpriour.github.io/blog/</loc>
-    <lastmod>2017-09-02T13:35:53-05:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://mpriour.github.io/blog/posts/</loc>
+    <loc>./</loc>
     <lastmod>2017-09-02T13:35:53-05:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://mpriour.github.io/blog/tags/</loc>
+    <loc>./posts/</loc>
+    <lastmod>2017-09-02T13:35:53-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>./tags/</loc>
     <priority>0</priority>
   </url>
   

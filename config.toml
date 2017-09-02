@@ -1,4 +1,5 @@
-baseURL = "https://mpriour.github.io/blog/"
+baseURL = "./"
+relativeURLs = "true"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "Matt Priour"
 theme = "minimo"
