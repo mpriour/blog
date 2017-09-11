@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on Matt Priour</title>
+    <title>Posts on Matt Priour&#39;s Ramblings</title>
     <link>./posts/</link>
-    <description>Recent content in Posts on Matt Priour</description>
+    <description>Recent content in Posts on Matt Priour&#39;s Ramblings</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 02 Sep 2017 13:35:53 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 11 Sep 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="./posts/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>First</title>
-      <link>./posts/first/</link>
-      <pubDate>Sat, 02 Sep 2017 13:35:53 -0500</pubDate>
+      <title>Using the Clipboard APIs</title>
+      <link>./posts/clipboard/</link>
+      <pubDate>Mon, 11 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>./posts/first/</guid>
-      <description> Hello const world = 1;  </description>
+      <guid>./posts/clipboard/</guid>
+      <description>If you&amp;rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, the the Cliboard API &amp;amp; the execCommand API are very useful. However reading specs and limitations between different browsers makes it seem more complicated and limiting to use than it is.
+Let say you have contact information that you want to display in a nice card layout on the screen.</description>
     </item>
     
   </channel>

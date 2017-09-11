@@ -1,5 +1,40 @@
 baseURL = "./"
 relativeURLs = "true"
+title = "Matt Priour's Ramblings"
 languageCode = "en-us"
-title = "Matt Priour"
-theme = "minimo"
+paginate = "10" # Number of posts per page
+theme = "mainroad"
+disqusShortname = "http-mpriour-github-io-blog" # Enable comments by entering your Disqus shortname
+googleAnalytics = "UA-25070249-2" # Enable Google Analytics by entering your tracking id
+
+[Author] # Used in authorbox
+    name = "Matt Priour"
+    bio = "Geo + Javascript focused developer, dad, husband, former wildlife biologist and occasional birder"
+    avatar = "img/profile_twitter.jpg"
+
+[Params]
+    #subtitle = "Just another site" # Subtitle of your site. Used in site header
+    description = " Matt Priour's personal blog about whatever. Views & opinions are strictly my own." # Description of your site. Used in meta description
+    #opengraph = true # Enable OpenGraph if true
+    readmore = true # Show "Read more" button in list if true
+    leftsidebar = false # Move sidebar to the left side if true
+    authorbox = true # Show authorbox at bottom of pages if true
+    post_navigation = true # Show post navigation at bottom of pages if true
+    postSections = ["posts"] # the section pages to show on home page and the "Recent articles" widget
+    #postSections = ["blog", "news"] # alternative that shows more than one section's pages
+    #dateformat = "2006-01-02" # change the format of dates
+
+[Params.widgets]
+    search = true # Enable "Search" widget
+    recent_articles = true # Enable "Recent articles" widget
+    recent_articles_num = 5 # Set the number of articles in the "Recent articles" widget
+    #categories = true # Enable "Categories" widget
+    #tags = true # Enable "Tags" widget
+    #tags_counter = false # Enable counter for each tag in "Tags" widget (disabled by default)
+
+    # Enable "Social" widget, if any of "social_*" set a value
+    #social_facebook = "username"
+    social_twitter = "mattpriour"
+    #social_linkedin = "username"
+    social_github = "mpriour"
+    #social_email = "example@example.com"

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Using the Clipboard APIs</title>
+<meta name="description" content=" Matt Priour&#39;s personal blog about whatever. Views &amp; opinions are strictly my own.">
+<meta name="generator" content="Hugo 0.26" />
+
+<link rel="dns-prefetch" href="//fonts.googleapis.com" />
+<link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700" type="text/css" media="all" />
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+<link rel="stylesheet" href="../../css/style.css" type="text/css" media="all" />
+<script type="text/javascript" src="../../js/scripts.js"></script>
+<link rel="shortcut icon" href="../../favicon.ico">
+
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-25070249-2', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='//www.google-analytics.com/analytics.js'></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+</head>
+<body class="body body-right-sidebar mobile" itemscope="itemscope" itemtype="http://schema.org/WebPage">
+	<div class="container container-outer">
+		<header class="header" itemscope="itemscope" itemtype="http://schema.org/WPHeader">
+			<div class="container container-inner clearfix">
+				<div class="logo" role="banner" itemscope="itemscope" itemtype="http://schema.org/Brand">
+					<a class="logo__link" href="../.././" title="Matt Priour&#39;s Ramblings" rel="home">
+						<h1 class="logo__title">Matt Priour&#39;s Ramblings</h1>
+						
+					</a>
+				</div>
+			</div>
+			<hr class="divider">
+		</header>
+		<div class="wrapper clearfix">
+
+<main class="main-content content" role="main" itemprop="mainContentOfPage">
+	<article class="post">
+		<header class="post__header clearfix">
+			<h1 class="post__title">Using the Clipboard APIs</h1>
+			<p class="post__meta meta">
+				<svg class="icon icon-time" height="14" viewBox="0 0 16 16" width="14" xmlns="http://www.w3.org/2000/svg"><path d="m8-.0000003c-4.4 0-8 3.6-8 8 0 4.4000003 3.6 8.0000003 8 8.0000003 4.4 0 8-3.6 8-8.0000003 0-4.4-3.6-8-8-8zm0 14.4000003c-3.52 0-6.4-2.88-6.4-6.4000003 0-3.52 2.88-6.4 6.4-6.4 3.52 0 6.4 2.88 6.4 6.4 0 3.5200003-2.88 6.4000003-6.4 6.4000003zm.4-10.4000003h-1.2v4.8l4.16 2.5600003.64-1.04-3.6-2.1600003z"/></svg>
+				<time class="post__meta-date" datetime="2017-09-11T00:00:00">September 11, 2017</time>
+			</p>
+		</header>
+		<div class="post__content clearfix">
+			
+
+<p>If you&rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, the the <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent">Cliboard API</a> &amp; the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">execCommand API</a> are very useful. However reading specs and <a href="http://caniuse.com/#feat=clipboard">limitations</a> between different browsers makes it seem more complicated and limiting to use than it is.</p>
+
+<p>Let say you have contact information that you want to display in a nice card layout on the screen. However, that formatted display doesn&rsquo;t copy well into other systems or uses. We could provide users with a link to copy the contact data in a CSV format. That way it could be pasted into a text file or a spreadsheet or imported in Outlook.</p>
+
+<h3 id="our-contact-data">Our contact data</h3>
+
+<pre><code class="language-json">{&quot;contacts&quot;:[
+    {
+        &quot;fname&quot;: &quot;Aly&quot;,
+        &quot;lname&quot;: &quot;Money&quot;,
+        &quot;email&quot;: &quot;a.money@gmail.com&quot;,
+        &quot;phone&quot;: &quot;555-333-1234&quot;
+    },
+...
+    {
+        &quot;fname&quot;: &quot;Dot&quot;,
+        &quot;lname&quot;: &quot;Matrix&quot;,
+        &quot;email&quot;: &quot;dmatrix@yahoo.com&quot;,
+        &quot;phone&quot;: &quot;555-333-4123&quot;
+    }
+]}
+</code></pre>
+
+<p>Rendered into the following markup for each card</p>
+
+<pre><code class="language-html">&lt;div data-cid=&quot;0&quot; class=&quot;card&quot;&gt;
+    &lt;p class=&quot;name&quot;&gt;Aly Money&lt;/p&gt;
+    &lt;p class=&quot;email&quot;&gt;&lt;a href=&quot;mailto:a.money@gmail.com&quot;&gt;a.money@gmail.com&lt;/a&gt;&lt;/p&gt;
+    &lt;p class=&quot;phone&quot;&gt;555-333-1234&lt;/p&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;a href=&quot;#&quot; class=&quot;copy-link&quot; data-cid=&quot;0&quot;&gt;Copy&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+
+<p>To make this work properly we are going to need an input field to actually do the copying from. Copying from a selected, focused input field is the only cross-browser way to make this work. So we also add</p>
+
+<pre><code class="language-html">&lt;div id=&quot;form-container&quot;&gt;
+    &lt;textarea id=&quot;copy-area&quot; tabindex=&quot;-1&quot;&gt;&lt;/textarea&gt;
+&lt;/div&gt;
+</code></pre>
+
+<p>But we don&rsquo;t actually want to see this field or have users interact with it. For the copy function to work, the field also has to be visible, so we can&rsquo;t use <code>display: none</code> to hide this field. We have to push it offscreen.</p>
+
+<pre><code class="language-css">#form-container{
+    position: absolute;
+    left: -5000px;
+} 
+</code></pre>
+
+<p>Here is the jQuery based copy function we are using in this example. You can see a vanilla js one in <a href="https://www.sitepoint.com/javascript-copy-to-clipboard/">this post</a> by Craig Buckler of SitePoint.</p>
+
+<pre><code class="language-js">function copyValues(id, val){
+    //set value in hidden text area and select it.
+    var $area = $(&quot;#&quot;+id).val(val).select();
+    try {
+        // copy text
+        document.execCommand('copy');
+        $area.blur();
+    } catch (err) {
+        //show in an alert just in case execCommand doesn't work
+        alert($area.val());
+    }
+}
+</code></pre>
+
+<p>Hook up the handlers for the &ldquo;Copy&rdquo; buttons</p>
+
+<pre><code class="language-js">//Hook up copy button handlers
+$(&quot;.copy-link&quot;).on(&quot;click&quot;, function(evt){
+    var contact = data.contacts[evt.target.dataset.cid];
+    var csv = &quot;First Name, Last Name, E-mail, Work Phone\n&quot; +
+        [contact.fname,contact.lname,contact.email,contact.phone].join(&quot;,&quot;);
+    copyValues(&quot;copy-area&quot;, csv);
+    console.log(&quot;Copied\n&quot; + csv);
+});
+
+$(&quot;.copy-all-link&quot;).on(&quot;click&quot;, function(evt){
+    var csv = [&quot;First Name, Last Name, E-mail, Work Phone&quot;];
+    var records = data.contacts.map(function(c){
+        return [c.fname,c.lname,c.email,c.phone].join(&quot;,&quot;);
+    });
+    var vals = csv.concat(records).join(&quot;\n&quot;)
+    copyValues(&quot;copy-area&quot;, vals);
+    console.log(&quot;Copied\n&quot; + vals);
+})
+</code></pre>
+
+<p>Now what if want to provide specialized copy behavior for keyboard (Ctrl+C / Cmd+C) or context menu copy commands? Then we need to capture the &ldquo;copy&rdquo; event. One thing we could do is simply hookup an event listner for the <code>copy</code> event on the &ldquo;card&rdquo; class. However, the user would have to have their mouse over the card when they hit Ctrl+C / Cmd+C. Unless we provided instructions or feedback it would be difficult to know that this interaction was even possible. Also, they would not get a &ldquo;copy&rdquo; option in the context menu either.</p>
+
+<p>This example was already fairly contrived to begin with but it is going to get even more so as we add some &ldquo;features&rdquo; to the address cards.  We want the user to be able to tab to focus on the cards and we want a copy option in the context menu. The simplest way to achieve this is to make the cards <code>contenteditable</code>. To keep the cards from actually being editable we have to trap keypresses and prevent them unless they have a &ldquo;meta&rdquo; key or tab. This function for making the content-editable cards remain read-only is contained in the pen below.</p>
+
+<p>To handle the <code>copy</code> event, we simply set a listener for <code>copy</code> on the &ldquo;card&rdquo; class. We prevent the default event, which wouldn&rsquo;t copy anything anyway if we didn&rsquo;t have some text highlighted. Then attempt to <code>setData</code> on the event&rsquo;s <code>clipboardData</code>, if we can&rsquo;t do that then we just use the same <code>execCommand</code> copy method as before.</p>
+
+<pre><code class="language-js">//Hook up copy context, etc.. handler
+$(&quot;.card&quot;).on(&quot;copy&quot;, function(evt){
+    evt.preventDefault();
+    evt = evt.originalEvent;
+    var contact = data.contacts[evt.currentTarget.dataset.cid];
+    var csv = &quot;First Name, Last Name, E-mail, Work Phone\n&quot; +
+        [contact.fname,contact.lname,contact.email,contact.phone].join(&quot;,&quot;);
+    if(evt.clipboardData &amp;&amp; evt.clipboardData.setData){
+        evt.clipboardData.setData('text/plain', csv);
+    } else {
+        copyValues(&quot;copy-area&quot;, csv);
+    }
+    console.log(&quot;Copied\n&quot; + csv);
+});
+</code></pre>
+
+<p>Unfortunately, IE11 is still a problem and this trick doesn&rsquo;t work on it. The <code>copy</code> event is never fired. Only the copy links work in IE. Chrome, Firefox, and Safari all work in both modes. You can see the full code in the pen below.</p>
+
+<p><p data-height="400" data-theme-id="1" data-slug-hash="RZXBme" data-default-tab="js,result" data-user="mpriour" data-embed-version="2" data-pen-title="Using both Copy API's" class="codepen">See the Pen <a href="https://codepen.io/mpriour/pen/RZXBme/">Using both Copy API&rsquo;s</a> by Matt Priour (<a href="https://codepen.io/mpriour">@mpriour</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script></p>
+
+		</div>
+		
+
+	</article>
+	
+<div class="authorbox clearfix">
+	<figure class="authorbox__avatar">
+		<img alt="Matt Priour avatar" src="../../img/profile_twitter.jpg" class="avatar" height="90" width="90">
+	</figure>
+	<div class="authorbox__header">
+		<span class="authorbox__name">About Matt Priour</span>
+	</div>
+	<div class="authorbox__description">
+		Geo &#43; Javascript focused developer, dad, husband, former wildlife biologist and occasional birder
+	</div>
+</div>
+	
+
+	
+<div class="comments">
+	<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "http-mpriour-github-io-blog" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+</main>
+
+<aside class="sidebar" itemscope="itemscope" itemtype="http://schema.org/WPSideBar">
+	
+<div class="widget-search widget">
+	<form class="widget-search__form" role="search" method="get" action="//google.com/search">
+		<label>
+			<span class="screen-reader-text">Search for:</span>
+			<input class="widget-search__field" type="search" placeholder="SEARCH..." value="" name="q">
+		</label>
+		<input class="widget-search__submit" type="submit" value="Search">
+		<input type="hidden" name="sitesearch" value="./" />
+	</form>
+</div>
+	
+<div class="widget-recent widget">
+	<h4 class="widget__title">Recent Posts</h4>
+	<div class="widget__content">
+		<ul class="widget__list">
+			<li class="widget__item"><a class="widget__link" href="posts/clipboard/">Using the Clipboard APIs</a></li>
+		</ul>
+	</div>
+</div>
+
+	
+	
+<div class="widget-social widget">
+	<h4 class="widget-social__title widget__title">Social</h4>
+	<div class="widget-social__content widget__content">
+		<div class="widget-social__item widget__item">
+			<a class="widget-social__link widget__link btn" title="Twitter" rel="noopener noreferrer" href="https://twitter.com/mattpriour" target="_blank">
+				<svg class="widget-social__link-icon icon-twitter" viewBox="0 0 384 312" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="#fff"><path d="m384 36.9c-14.1 6.3-29.3 10.5-45.2 12.4 16.3-9.7 28.8-25.2 34.6-43.6-15.2 9-32.1 15.6-50 19.1-14.4-15.2-34.9-24.8-57.5-24.8-43.5 0-78.8 35.3-78.8 78.8 0 6.2.7 12.2 2 17.9-65.5-3.3-123.5-34.6-162.4-82.3-6.7 11.6-10.6 25.2-10.6 39.6 0 27.3 13.9 51.4 35 65.6-12.9-.4-25.1-4-35.7-9.9v1c0 38.2 27.2 70 63.2 77.2-6.6 1.8-13.6 2.8-20.8 2.8-5.1 0-10-.5-14.8-1.4 10 31.3 39.1 54.1 73.6 54.7-27 21.1-60.9 33.7-97.8 33.7-6.4 0-12.6-.4-18.8-1.1 34.9 22.4 76.3 35.4 120.8 35.4 144.9 0 224.1-120 224.1-224.1 0-3.4-.1-6.8-.2-10.2 15.4-11.1 28.7-25 39.3-40.8z"/></svg>
+				<span>Twitter</span>
+			</a>
+		</div>
+		<div class="widget-social__item widget__item">
+			<a class="widget-social__link widget__link btn" title="GitHub" rel="noopener noreferrer" href="https://github.com/mpriour" target="_blank">
+				<svg class="widget-social__link-icon icon-github" viewBox="0 0 384 374" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="#fff"><path d="m192 0c-106.1 0-192 85.8-192 191.7 0 84.7 55 156.6 131.3 181.9 9.6 1.8 13.1-4.2 13.1-9.2 0-4.6-.2-16.6-.3-32.6-53.4 11.6-64.7-25.7-64.7-25.7-8.7-22.1-21.3-28-21.3-28-17.4-11.9 1.3-11.6 1.3-11.6 19.3 1.4 29.4 19.8 29.4 19.8 17.1 29.3 44.9 20.8 55.9 15.9 1.7-12.4 6.7-20.8 12.2-25.6-42.6-4.8-87.5-21.3-87.5-94.8 0-20.9 7.5-38 19.8-51.4-2-4.9-8.6-24.3 1.9-50.7 0 0 16.1-5.2 52.8 19.7 15.3-4.2 31.7-6.4 48.1-6.5 16.3.1 32.7 2.2 48.1 6.5 36.7-24.8 52.8-19.7 52.8-19.7 10.5 26.4 3.9 45.9 1.9 50.7 12.3 13.4 19.7 30.5 19.7 51.4 0 73.7-44.9 89.9-87.7 94.6 6.9 5.9 13 17.6 13 35.5 0 25.6-.2 46.3-.2 52.6 0 5.1 3.5 11.1 13.2 9.2 76.2-25.5 131.2-97.3 131.2-182 0-105.9-86-191.7-192-191.7z"/></svg>
+				<span>GitHub</span>
+			</a>
+		</div>
+	</div>
+</div>
+
+	
+</aside>
+
+	</div>
+		<footer class="footer" itemscope="itemscope" itemtype="http://schema.org/WPFooter">
+			<div class="container container-inner">
+				<p class="footer__copyright">&copy; 2017 Matt Priour&#39;s Ramblings. <span class="footer__copyright-credits">Generated with <a href="https://gohugo.io/" rel="nofollow noopener" target="_blank">Hugo</a> and <a href="https://github.com/Vimux/Mainroad/" rel="nofollow noopener" target="_blank">Mainroad theme</a>.</span></p>
+			</div>
+		</footer>
+	</div>
+
+<script>
+	
+
+</script>
+</body>
+</html>
