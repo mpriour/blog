@@ -52,7 +52,7 @@ ga('send', 'pageview');
 		<div class="post__content clearfix">
 			
 
-<p>If you&rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, the the <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent">Cliboard API</a> &amp; the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">execCommand API</a> are very useful. However reading specs and <a href="http://caniuse.com/#feat=clipboard">limitations</a> between different browsers makes it seem more complicated and limiting to use than it is.</p>
+<p>If you&rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, then the <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent">Cliboard API</a> &amp; the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">execCommand API</a> are very useful. However reading specs and <a href="http://caniuse.com/#feat=clipboard">limitations</a> between different browsers makes it seem more complicated and limiting to use than it is.</p>
 
 <p>Let say you have contact information that you want to display in a nice card layout on the screen. However, that formatted display doesn&rsquo;t copy well into other systems or uses. We could provide users with a link to copy the contact data in a CSV format. That way it could be pasted into a text file or a spreadsheet or imported in Outlook.</p>
 
@@ -138,7 +138,7 @@ $(&quot;.copy-all-link&quot;).on(&quot;click&quot;, function(evt){
 })
 </code></pre>
 
-<p>Now what if want to provide specialized copy behavior for keyboard (Ctrl+C / Cmd+C) or context menu copy commands? Then we need to capture the &ldquo;copy&rdquo; event. One thing we could do is simply hookup an event listner for the <code>copy</code> event on the &ldquo;card&rdquo; class. However, the user would have to have their mouse over the card when they hit Ctrl+C / Cmd+C. Unless we provided instructions or feedback it would be difficult to know that this interaction was even possible. Also, they would not get a &ldquo;copy&rdquo; option in the context menu either.</p>
+<p>Now what if you want to provide specialized copy behavior for keyboard (Ctrl+C / Cmd+C) or context menu copy commands? Then we need to capture the &ldquo;copy&rdquo; event. One thing we could do is simply hookup an event listner for the <code>copy</code> event on the &ldquo;card&rdquo; class. However, the user would have to have their mouse over the card when they hit Ctrl+C / Cmd+C. Unless we provided instructions or feedback it would be difficult to know that this interaction was even possible. Also, they would not get a &ldquo;copy&rdquo; option in the context menu either.</p>
 
 <p>This example was already fairly contrived to begin with but it is going to get even more so as we add some &ldquo;features&rdquo; to the address cards.  We want the user to be able to tab to focus on the cards and we want a copy option in the context menu. The simplest way to achieve this is to make the cards <code>contenteditable</code>. To keep the cards from actually being editable we have to trap keypresses and prevent them unless they have a &ldquo;meta&rdquo; key or tab. This function for making the content-editable cards remain read-only is contained in the pen below.</p>
 

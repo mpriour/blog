@@ -17,7 +17,7 @@
       <pubDate>Mon, 11 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>./posts/clipboard/</guid>
-      <description>If you&amp;rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, the the Cliboard API &amp;amp; the execCommand API are very useful. However reading specs and limitations between different browsers makes it seem more complicated and limiting to use than it is.
+      <description>If you&amp;rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, then the Cliboard API &amp;amp; the execCommand API are very useful. However reading specs and limitations between different browsers makes it seem more complicated and limiting to use than it is.
 Let say you have contact information that you want to display in a nice card layout on the screen.</description>
     </item>
     
