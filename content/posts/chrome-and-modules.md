@@ -7,7 +7,16 @@ date: 2017-09-20
 
 As of Chrome 61 (released September 2017) and Safari 10.1 (released March 2017) we've had browsers that were for all intents and purposes ES6 [complete](http://kangax.github.io/compat-table/es6/), including full support of [Modules](http://beta.caniuse.com/?feat=i#feat=es6-module). Ideally, when developing, you should be able to use all the features of ES6 and the convenience of modules **without** the need for a transpiler like Babel or other build tools / file watchers. If you're strictly developing your own self-contained solution with **no** other libraries, then yes this can work for you, right now.
 
-You are going to run into problems quickly if you want to use other libraries. Let's take what should be a simple case of importing a library purely for the side effects. Take [d3](https://d3js.org/) for example. As of version 4 it is split up into modules and the "main" library of d3 rolls up the most popular/common of these modules and will export it to the global context. Like many other modern, properly built libraries, d3 uses Rollup to create a UMD script for the browser and even another script for using in Node. 
+You are going to run into problems quickly if you want to use other libraries. Let's take what should be a simple case of importing a library purely for the side effects. Take [d3](https://d3js.org/) for example. As of version 4 it is split up into modules and the "main" library of d3 rolls up the most popular/common of these modules and will export it to the global context. Like many other modern, properly built libraries, d3 uses Rollup to create a UMD script for the browser and even another script for using in Node.
+
+For these minimal examples assume you already have d3 available from `npm import d3` and a simple html file with a module script tag.
+```html
+<html>
+    <script type="module">
+        /* Imports will go here */
+    </script>
+</html>
+```
 
 ### Side Effect Import
 `import "./node_modules/d3/build/d3.js";` 
