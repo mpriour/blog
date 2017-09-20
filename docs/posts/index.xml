@@ -6,10 +6,19 @@
     <description>Recent content in Posts on Matt Priour&#39;s Ramblings</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 11 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 19 Sep 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="./posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Chrome and Modules</title>
+      <link>./posts/chrome-and-modules/</link>
+      <pubDate>Tue, 19 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>./posts/chrome-and-modules/</guid>
+      <description>Chrome is ready for modules but the Modules aren&amp;rsquo;t ready for Chrome As of Chrome 61 (released September 2017) and Safari 10.1 (released March 2017) we&amp;rsquo;ve had browsers that were for all intents and purposes ES6 complete, including full support of Modules. Ideally, when developing, you should be able to use all the features of ES6 and the convenience of modules without the need for a transpiler like Babel or other build tools / file watchers.</description>
+    </item>
     
     <item>
       <title>Using the Clipboard APIs</title>

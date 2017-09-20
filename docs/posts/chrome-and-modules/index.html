@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Using the Clipboard APIs</title>
+<title>Chrome and Modules</title>
 <meta name="description" content=" Matt Priour&#39;s personal blog about whatever. Views &amp; opinions are strictly my own.">
 <meta name="generator" content="Hugo 0.26" />
 
@@ -43,127 +43,77 @@ ga('send', 'pageview');
 <main class="main-content content" role="main" itemprop="mainContentOfPage">
 	<article class="post">
 		<header class="post__header clearfix">
-			<h1 class="post__title">Using the Clipboard APIs</h1>
+			<h1 class="post__title">Chrome and Modules</h1>
 			<p class="post__meta meta">
 				<svg class="icon icon-time" height="14" viewBox="0 0 16 16" width="14" xmlns="http://www.w3.org/2000/svg"><path d="m8-.0000003c-4.4 0-8 3.6-8 8 0 4.4000003 3.6 8.0000003 8 8.0000003 4.4 0 8-3.6 8-8.0000003 0-4.4-3.6-8-8-8zm0 14.4000003c-3.52 0-6.4-2.88-6.4-6.4000003 0-3.52 2.88-6.4 6.4-6.4 3.52 0 6.4 2.88 6.4 6.4 0 3.5200003-2.88 6.4000003-6.4 6.4000003zm.4-10.4000003h-1.2v4.8l4.16 2.5600003.64-1.04-3.6-2.1600003z"/></svg>
-				<time class="post__meta-date" datetime="2017-09-11T00:00:00">September 11, 2017</time>
+				<time class="post__meta-date" datetime="2017-09-19T00:00:00">September 19, 2017</time>
 			</p>
 		</header>
 		<div class="post__content clearfix">
 			
 
-<p>If you&rsquo;ve ever wanted a way for a user to copy information in a different format or control what exactly gets copied from areas of your page, then the <a href="https://developer.mozilla.org/en-US/docs/Web/API/ClipboardEvent">Cliboard API</a> &amp; the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Document/execCommand">execCommand API</a> are very useful. However reading specs and <a href="http://caniuse.com/#feat=clipboard">limitations</a> between different browsers makes it seem more complicated and limiting to use than it is.</p>
+<h2 id="chrome-is-ready-for-modules-but-the-modules-aren-t-ready-for-chrome">Chrome is ready for modules but the Modules aren&rsquo;t ready for Chrome</h2>
 
-<p>Let say you have contact information that you want to display in a nice card layout on the screen. However, that formatted display doesn&rsquo;t copy well into other systems or uses. We could provide users with a link to copy the contact data in a CSV format. That way it could be pasted into a text file or a spreadsheet or imported in Outlook.</p>
+<p>As of Chrome 61 (released September 2017) and Safari 10.1 (released March 2017) we&rsquo;ve had browsers that were for all intents and purposes ES6 <a href="http://kangax.github.io/compat-table/es6/">complete</a>, including full support of <a href="http://beta.caniuse.com/?feat=i#feat=es6-module">Modules</a>. Ideally, when developing, you should be able to use all the features of ES6 and the convenience of modules <strong>without</strong> the need for a transpiler like Babel or other build tools / file watchers. If you&rsquo;re strictly developing your own self-contained solution with <strong>no</strong> other libraries, then yes this can work for you, right now.</p>
 
-<h3 id="our-contact-data">Our contact data</h3>
+<p>You are going to run into problems quickly if you want to use other libraries. Let&rsquo;s take what should be a simple case of importing a library purely for the side effects. Take <a href="https://d3js.org/">d3</a> for example. As of version 4 it is split up into modules and the &ldquo;main&rdquo; library of d3 rolls up the most popular/common of these modules and will export it to the global context. Like many other modern, properly built libraries, d3 uses Rollup to create a UMD script for the browser and even another script for using in Node.</p>
 
-<pre><code class="language-json">{&quot;contacts&quot;:[
-    {
-        &quot;fname&quot;: &quot;Aly&quot;,
-        &quot;lname&quot;: &quot;Money&quot;,
-        &quot;email&quot;: &quot;a.money@gmail.com&quot;,
-        &quot;phone&quot;: &quot;555-333-1234&quot;
-    },
-...
-    {
-        &quot;fname&quot;: &quot;Dot&quot;,
-        &quot;lname&quot;: &quot;Matrix&quot;,
-        &quot;email&quot;: &quot;dmatrix@yahoo.com&quot;,
-        &quot;phone&quot;: &quot;555-333-4123&quot;
-    }
-]}
+<h3 id="side-effect-import">Side Effect Import</h3>
+
+<p><code>import &quot;./node_modules/d3/build/d3.js&quot;;</code></p>
+
+<h3 id="nope">NOPE</h3>
+
+<p>The problem is the UMD that Rollup makes doesn&rsquo;t provide a context when there is none.</p>
+
+<pre><code class="language-js">(function (global, factory) {
+	...
+}(this, (function (exports) { 'use strict';
 </code></pre>
 
-<p>Rendered into the following markup for each card</p>
+<p><code>this</code> is undefined when importing a module in ES6. For the UMD to work, it needs to be <code>this || Window || self || global</code> to really work in all contexts.</p>
 
-<pre><code class="language-html">&lt;div data-cid=&quot;0&quot; class=&quot;card&quot;&gt;
-    &lt;p class=&quot;name&quot;&gt;Aly Money&lt;/p&gt;
-    &lt;p class=&quot;email&quot;&gt;&lt;a href=&quot;mailto:a.money@gmail.com&quot;&gt;a.money@gmail.com&lt;/a&gt;&lt;/p&gt;
-    &lt;p class=&quot;phone&quot;&gt;555-333-1234&lt;/p&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;a href=&quot;#&quot; class=&quot;copy-link&quot; data-cid=&quot;0&quot;&gt;Copy&lt;/a&gt;&lt;/p&gt;
+<hr />
+
+<p>How about just using a library that was meant to be imported as modules. We are using this for development and don&rsquo;t care that it is a few more files to load. We are still planning on using a build process in the end. Let&rsquo;s just take the <strong>collection</strong> module of d3 and attempt to import that.</p>
+
+<h3 id="library-module-import">Library Module Import</h3>
+
+<p><code>import * as collect from &quot;./node_modules/d3-collection/index.js&quot;</code></p>
+
+<p>index.js contains</p>
+
+<pre><code class="language-js">export {default as nest} from &quot;./src/nest&quot;;
+export {default as set} from &quot;./src/set&quot;;
+export {default as map} from &quot;./src/map&quot;;
+export {default as keys} from &quot;./src/keys&quot;;
+export {default as values} from &quot;./src/values&quot;;
+export {default as entries} from &quot;./src/entries&quot;;
 </code></pre>
 
-<p>To make this work properly we are going to need an input field to actually do the copying from. Copying from a selected, focused input field is the only cross-browser way to make this work. So we also add</p>
+<h3 id="nope-1">NOPE</h3>
 
-<pre><code class="language-html">&lt;div id=&quot;form-container&quot;&gt;
-    &lt;textarea id=&quot;copy-area&quot; tabindex=&quot;-1&quot;&gt;&lt;/textarea&gt;
-&lt;/div&gt;
-</code></pre>
+<p>Why? Because the import paths don&rsquo;t have <code>.js</code>. You get 404 errors instead of module imports.</p>
 
-<p>But we don&rsquo;t actually want to see this field or have users interact with it. For the copy function to work, the field also has to be visible, so we can&rsquo;t use <code>display: none</code> to hide this field. We have to push it offscreen.</p>
+<hr />
 
-<pre><code class="language-css">#form-container{
-    position: absolute;
-    left: -5000px;
-} 
-</code></pre>
+<p>What if we get really crazy and go <strong>ALL the way down</strong> to an individual module. Let&rsquo;s just use the <strong>nest</strong> module.</p>
 
-<p>Here is the jQuery based copy function we are using in this example. You can see a vanilla js one in <a href="https://www.sitepoint.com/javascript-copy-to-clipboard/">this post</a> by Craig Buckler of SitePoint.</p>
+<h3 id="individual-module-import">Individual Module Import</h3>
 
-<pre><code class="language-js">function copyValues(id, val){
-    //set value in hidden text area and select it.
-    var $area = $(&quot;#&quot;+id).val(val).select();
-    try {
-        // copy text
-        document.execCommand('copy');
-        $area.blur();
-    } catch (err) {
-        //show in an alert just in case execCommand doesn't work
-        alert($area.val());
-    }
-}
-</code></pre>
+<p><code>import nest from &quot;./node_modules/d3-collection/src/nest.js&quot;</code></p>
 
-<p>Hook up the handlers for the &ldquo;Copy&rdquo; buttons</p>
+<h3 id="yes">YES</h3>
 
-<pre><code class="language-js">//Hook up copy button handlers
-$(&quot;.copy-link&quot;).on(&quot;click&quot;, function(evt){
-    var contact = data.contacts[evt.target.dataset.cid];
-    var csv = &quot;First Name, Last Name, E-mail, Work Phone\n&quot; +
-        [contact.fname,contact.lname,contact.email,contact.phone].join(&quot;,&quot;);
-    copyValues(&quot;copy-area&quot;, csv);
-    console.log(&quot;Copied\n&quot; + csv);
-});
+<p>Well we <em>finally</em> got what we wanted, but we had to go to the micro module level to get it. Could you imagine trying to import all the modules included in d3 this way?!?</p>
 
-$(&quot;.copy-all-link&quot;).on(&quot;click&quot;, function(evt){
-    var csv = [&quot;First Name, Last Name, E-mail, Work Phone&quot;];
-    var records = data.contacts.map(function(c){
-        return [c.fname,c.lname,c.email,c.phone].join(&quot;,&quot;);
-    });
-    var vals = csv.concat(records).join(&quot;\n&quot;)
-    copyValues(&quot;copy-area&quot;, vals);
-    console.log(&quot;Copied\n&quot; + vals);
-})
-</code></pre>
+<hr />
 
-<p>Now what if you want to provide specialized copy behavior for keyboard (Ctrl+C / Cmd+C) or context menu copy commands? Then we need to capture the &ldquo;copy&rdquo; event. One thing we could do is simply hookup an event listner for the <code>copy</code> event on the &ldquo;card&rdquo; class. However, the user would have to have their mouse over the card when they hit Ctrl+C / Cmd+C. Unless we provided instructions or feedback it would be difficult to know that this interaction was even possible. Also, they would not get a &ldquo;copy&rdquo; option in the context menu either.</p>
+<p>How about using example starter projects or various scaffolding tools that create project skeletons for you? You will run into the same problem as when we attempted the Library Module Import. Almost none of these projects or generators will produce import statements that use the <code>.js</code> in the path. So instead of your own module imports, you get 404 errors.</p>
 
-<p>This example was already fairly contrived to begin with but it is going to get even more so as we add some &ldquo;features&rdquo; to the address cards.  We want the user to be able to tab to focus on the cards and we want a copy option in the context menu. The simplest way to achieve this is to make the cards <code>contenteditable</code>. To keep the cards from actually being editable we have to trap keypresses and prevent them unless they have a &ldquo;meta&rdquo; key or tab. This function for making the content-editable cards remain read-only is contained in the pen below.</p>
+<h2 id="the-future">The Future</h2>
 
-<p>To handle the <code>copy</code> event, we simply set a listener for <code>copy</code> on the &ldquo;card&rdquo; class. We prevent the default event, which wouldn&rsquo;t copy anything anyway if we didn&rsquo;t have some text highlighted. Then attempt to <code>setData</code> on the event&rsquo;s <code>clipboardData</code>, if we can&rsquo;t do that then we just use the same <code>execCommand</code> copy method as before.</p>
-
-<pre><code class="language-js">//Hook up copy context, etc.. handler
-$(&quot;.card&quot;).on(&quot;copy&quot;, function(evt){
-    evt.preventDefault();
-    evt = evt.originalEvent;
-    var contact = data.contacts[evt.currentTarget.dataset.cid];
-    var csv = &quot;First Name, Last Name, E-mail, Work Phone\n&quot; +
-        [contact.fname,contact.lname,contact.email,contact.phone].join(&quot;,&quot;);
-    if(evt.clipboardData &amp;&amp; evt.clipboardData.setData){
-        evt.clipboardData.setData('text/plain', csv);
-    } else {
-        copyValues(&quot;copy-area&quot;, csv);
-    }
-    console.log(&quot;Copied\n&quot; + csv);
-});
-</code></pre>
-
-<p>Unfortunately, IE11 is still a problem and this trick doesn&rsquo;t work on it. The <code>copy</code> event is never fired. Only the copy links work in IE. Chrome, Firefox, and Safari all work in both modes. You can see the full code in the pen below.</p>
-
-<p><p data-height="400" data-theme-id="1" data-slug-hash="RZXBme" data-default-tab="js,result" data-user="mpriour" data-embed-version="2" data-pen-title="Using both Copy API's" class="codepen">See the Pen <a href="https://codepen.io/mpriour/pen/RZXBme/">Using both Copy API&rsquo;s</a> by Matt Priour (<a href="https://codepen.io/mpriour">@mpriour</a>) on <a href="https://codepen.io">CodePen</a>.</p>
-<script async src="https://production-assets.codepen.io/assets/embed/ei.js"></script></p>
+<p>The easiest change to make would be to update the UMD template in Rollup and other build tools to include fallback defaults for the <code>this</code> context. That change would allow side effect libraries to be easily imported. Next, scaffolding tools and starter projects should include full paths to modules. Until these changes are standard practice, you will still need some kind of live transpiler or module loader/packager to develop in ES6, even if you only use ES6 complete browsers during development.</p>
 
 		</div>
 		
@@ -183,8 +133,8 @@ $(&quot;.card&quot;).on(&quot;copy&quot;, function(evt){
 </div>
 	
 <nav class="post-nav row clearfix" itemscope="itemscope" itemtype="http://schema.org/SiteNavigationElement">
-	<div class="post-nav__item post-nav__item--next col-1-2">
-		<a class="post-nav__link" href="posts/chrome-and-modules/" rel="next"><span class="post-nav__caption">Next»</span><p class="post-nav__post-title">Chrome and Modules</p></a>
+	<div class="post-nav__item post-nav__item--prev col-1-2">
+		<a class="post-nav__link" href="posts/clipboard/" rel="prev"><span class="post-nav__caption">«Previous</span><p class="post-nav__post-title">Using the Clipboard APIs</p></a>
 	</div>
 </nav>
 
