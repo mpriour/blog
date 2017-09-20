@@ -23,6 +23,7 @@ googleAnalytics = "UA-25070249-2" # Enable Google Analytics by entering your tra
     postSections = ["posts"] # the section pages to show on home page and the "Recent articles" widget
     #postSections = ["blog", "news"] # alternative that shows more than one section's pages
     #dateformat = "2006-01-02" # change the format of dates
+    archive-paginate = 10
 
 [Params.widgets]
     search = true # Enable "Search" widget
