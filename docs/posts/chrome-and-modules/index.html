@@ -58,6 +58,15 @@ ga('send', 'pageview');
 
 <p>You are going to run into problems quickly if you want to use other libraries. Let&rsquo;s take what should be a simple case of importing a library purely for the side effects. Take <a href="https://d3js.org/">d3</a> for example. As of version 4 it is split up into modules and the &ldquo;main&rdquo; library of d3 rolls up the most popular/common of these modules and will export it to the global context. Like many other modern, properly built libraries, d3 uses Rollup to create a UMD script for the browser and even another script for using in Node.</p>
 
+<p>For these minimal examples assume you already have d3 available from <code>npm import d3</code> and a simple html file with a module script tag.</p>
+
+<pre><code class="language-html">&lt;html&gt;
+    &lt;script type=&quot;module&quot;&gt;
+        /* Imports will go here */
+    &lt;/script&gt;
+&lt;/html&gt;
+</code></pre>
+
 <h3 id="side-effect-import">Side Effect Import</h3>
 
 <p><code>import &quot;./node_modules/d3/build/d3.js&quot;;</code></p>
