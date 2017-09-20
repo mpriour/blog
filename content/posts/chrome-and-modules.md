@@ -1,6 +1,6 @@
 ---
 title: "Chrome and Modules"
-date: 2017-09-19
+date: 2017-09-20
 ---
 
 ## Chrome is ready for modules but the Modules aren't ready for Chrome ##
